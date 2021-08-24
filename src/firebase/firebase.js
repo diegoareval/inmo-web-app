@@ -30,6 +30,12 @@ import "firebase/auth";
         this.db = app.firestore();
         this.auth = app.auth();
       }
+
+      isLogged(){
+        return new Promise(resolve => {
+          this.auth.onAuthStateChanged(resolve);
+        });
+      }
   }
 
 
