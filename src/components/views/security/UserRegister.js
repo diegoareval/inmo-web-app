@@ -16,22 +16,34 @@ import FirebaseService from "../../../services/firebase-db-operations";
 
 
 const UserRegister = () => {
-    const {db} = useContext(FirebaseContext);
+    const {db, auth} = useContext(FirebaseContext);
 
   const name = useField({ type: "text" });
   const password = useField({ type: "password" });
   const email = useField({ type: "text" });
   const lastName = useField({ type: "text" });
 
-
+const clean = ()=> {
+  name.clean();
+  password.clean();
+  email.clean();
+  lastName.clean();
+}
 
   const sendUser = async (e)=> {
     e.preventDefault();
-    const payload = {
-        name: name.value, password: password.value, email: email.value, lastName: lastName.value
-    }
-    const insertedData = await new FirebaseService(db).insert(COLLECTIONS.USERS, payload);
-   console.log("insertedData", insertedData);
+     auth.createUserWithEmailAndPassword(email.value, password.value ).then(async(authe)=> {
+       const paloadDb = {
+         uid: authe.user.uid,
+         email: email.value,
+         name: name.value,
+         lastName: lastName.value
+       }
+      const insertedData = await new FirebaseService(db).insert(COLLECTIONS.USERS, paloadDb);
+      console.log("insertedData", insertedData);
+      clean();
+     }).catch((err)=> console.log(err))
+    
   }
 
   return (
